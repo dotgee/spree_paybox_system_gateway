@@ -1,3 +1,4 @@
+#encoding: utf-8
 module Spree
   CheckoutController.class_eval do
     before_filter :paybox_check_response, :only => [ :paybox_paid, :paybox_refused, :paybox_cancelled ]
@@ -6,23 +7,62 @@ module Spree
     before_filter :load_paybox_params, :only => [ :paybox_pay ]
     before_filter :validate_paybox, :except => [ :edit ]
 
+    #
+    # Very bad hack to handle paybox external payment from
+    # standard checkout process
+    #
+    def update_with_paybox
+      if params[:order][:payments_attributes].present?
+        p_id =  params[:order][:payments_attributes].first[:payment_method_id]
+        unless p_id.nil?
+          if PaymentMethod.find(p_id).class == Spree::PaymentMethod::PayboxSystem
+            redirect_to :action => :paybox_pay, :params => { :payment_method_id => p_id } and return
+          end
+        end
+      end
+      update_without_paybox
+    end
+    alias_method_chain :update, :paybox
+
     def paybox_pay
+      unless @order.payments.where(:source_type => 'Spree::PayboxSystemTransaction').present?
+        #
+        # Record used payment method before payment
+        # because there is no way to pass additionnal params
+        # to paybox system
+        #
+        payment_method = PaymentMethod.find(params[:payment_method_id])
+        payment = @order.payments.create(:amount => @order.total,
+                                         # :source => paybox_transaction,
+                                         :payment_method_id => payment_method.id)
+        render action: 'paybox_pay', layout: false
+      end
     end
 
     def paybox_paid
-      order_id, payment_method_id = params[:ref].split('|')
+      # order_id, payment_method_id = params[:ref].split('|')
 
       unless @order.payments.where(:source_type => 'Spree::PayboxSystemTransaction').present?
-        payment_method = PaymentMethod.find(payment_method_id)
-        paybox_transaction = PayboxSystemTransaction.new(:action => 'paid', :amount => params[:amount], :auto => params[:auto], :error => params[:error], :ref => order_id)
+        payment_method = @order.payment_method # PaymentMethod.find(payment_method_id)
+        paybox_transaction = Spree::PayboxSystemTransaction.create_from_postback params.merge(:action => 'paid') # new(:action => 'paid', :amount => params[:amount], :auto => params[:auto], :error => params[:error], :ref => order_id)
 
-        payment = @order.payments.create(:amount => @order.total,
-                                         :source => paybox_transaction,
-                                         :payment_method_id => payment_method.id)
+        payment = @order.payments.where(:state => 'checkout',
+                                        :payment_method_id => payment_method.id).first
+
+        if payment
+          payment.source = paybox_transaction
+          payment.save
+        else
+          payment = @order.payments.create(:amount => @order.total,
+                                           :source => paybox_transaction,
+                                           :payment_method_id => payment_method.id)
+        end
 
         payment.started_processing!
-        payment.pend!
-
+        unless payment.completed?
+         # see: app/controllers/spree/skrill_status_controller.rb line 22
+         payment.complete!
+        end
       end
 
       until @order.state == 'complete'
@@ -32,18 +72,20 @@ module Spree
         end
       end
 
-      logger.debug "PAYBOX_PAID: #{order_id} #{payment_method.inspect} #{@order.payments.inspect} #{@order.inspect} #{params.inspect}"
+      logger.debug "PAYBOX_PAID: #{payment_method.inspect} #{@order.payments.inspect} #{@order.inspect} #{params.inspect}"
 
       flash.notice = t(:order_processed_sucessfully)
       redirect_to completion_route
     end
 
     def paybox_refused
-      raise "PAYBOX_REFUSED: #{params.inspect}"
+      flash[:error] = "Opération refusée"
+      redirect_to "/checkout/payment"
     end
 
     def paybox_cancelled
-      raise "PAYBOX_CANCELLED: #{params.inspect}"
+      flash[:error] = "Opération annulée"
+      redirect_to "/checkout/payment"
     end
 
     def paybox_ipn
@@ -72,7 +114,7 @@ module Spree
 
         @payr = Payr::Client.new
 
-        @paybox_params = @payr.get_paybox_params_from command_id: [ @order.id, params[:payment_method_id] ].join('|'),
+        @paybox_params = @payr.get_paybox_params_from command_id: @order.id,
                                                       buyer_email: current_user.email,
                                                       total_price: ( @order.total * 100 ).to_i,
                                                       callbacks: {

@@ -5,12 +5,22 @@ module Spree
     has_many :payments, :as => :source
 
     def actions
-      []
+      # %w{capture void credit}
+      %w{capture}
     end
       
+
+    def can_capture?(payment)
+      false # payment.state == 'pending'
+    end
+
+    def can_void?(payment)
+      payment.state != 'void'
+    end
+
     class << self
       def create_from_postback(params)
-        PayboxSystemTransation.create(
+        self.create(
           :action => params[:action],
           :amount => params[:amount],
           :auto => params[:auto],

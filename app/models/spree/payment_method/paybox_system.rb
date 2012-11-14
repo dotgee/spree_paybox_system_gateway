@@ -25,7 +25,11 @@ module Spree
     end
 
     def source_required?
-      false
+      true
+    end
+
+    def payment_source_class
+      PayboxSystemTransaction
     end
   end
 end

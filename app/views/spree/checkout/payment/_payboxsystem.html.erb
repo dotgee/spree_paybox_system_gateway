@@ -1,4 +1,5 @@
 <div>
   PAYBOX SYSTEM<br />
-  <%= link_to 'Paiement paybox', paybox_pay_checkout_url(:payment_method_id => payment_method.id) %>
+  <% # Hack for empty payment -%>
+  <%= link_to 'Paiement paybox', paybox_pay_checkout_url(:payment_method_id => payment_method.id), :class => 'button primary' %>
 </div>

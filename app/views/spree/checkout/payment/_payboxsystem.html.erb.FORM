@@ -1,0 +1,8 @@
+<div>
+  PAYBOX SYSTEM<br />
+  <%= link_to 'Paiement paybox', paybox_pay_order_checkout_url(@order) %>
+  <form action="<%= @payr.select_server_url -%>" method="POST">
+    <%= paybox_hidden_fields @paybox_params %>
+    <input type='submit' value='Payer ma commande' />
+  </form>
+</div>

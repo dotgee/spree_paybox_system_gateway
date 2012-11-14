@@ -1,0 +1,22 @@
+<%= render :partial => 'spree/admin/shared/configuration_menu' %>
+
+<h1><%= t("spree_paybox_system_gateway.paybox_system_settings") %></h1>
+
+<%= form_tag(admin_paybox_system_gateway_settings_path, :method => :put) do %>
+  <p>
+    <label><%= t("spree_paybox_system_gateway.site_id") %>:</label>
+    <%= text_field_tag('preferences[site_id]', SpreePayboxSystemGateway::Config[:site_id]) %>
+  </p>
+  <p>
+    <label><%= t("spree_paybox_system_gateway.rang") %>:</label>
+    <%= text_field_tag('preferences[rang]', SpreePayboxSystemGateway::Config[:rang]) %>
+  </p>
+  <p>
+    <label><%= t("spree_paybox_system_gateway.paybox_id") %>:</label>
+    <%= text_field_tag('preferences[paybox_id]', SpreePayboxSystemGateway::Config[:paybox_id]) %>
+  </p>
+  <p class="form-buttons">
+    <%= button t('update') %>
+    <%= t("or") %> <%= link_to t("cancel"), admin_paybox_system_gateway_settings_url %>
+  </p>
+<% end %>

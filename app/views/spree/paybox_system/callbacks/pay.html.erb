@@ -1,0 +1,8 @@
+<h1>
+  <%= t("payr.pay.redirected") -%>
+<p>
+  <form action="<%= @payr.select_server_url -%>" method="POST">
+    <%= paybox_hidden_fields @paybox_params %>
+    <input type='submit' value='Payer ma commande' />
+  </form>
+</p>

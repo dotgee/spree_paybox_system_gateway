@@ -3,20 +3,41 @@
 <h1><%= t("spree_paybox_system_gateway.paybox_system_settings") %></h1>
 
 <%= form_tag(admin_paybox_system_gateway_settings_path, :method => :put) do %>
-  <p>
-    <label><%= t("spree_paybox_system_gateway.site_id") %>:</label>
-    <%= text_field_tag('preferences[site_id]', SpreePayboxSystemGateway::Config[:site_id]) %>
-  </p>
-  <p>
-    <label><%= t("spree_paybox_system_gateway.rang") %>:</label>
-    <%= text_field_tag('preferences[rang]', SpreePayboxSystemGateway::Config[:rang]) %>
-  </p>
-  <p>
-    <label><%= t("spree_paybox_system_gateway.paybox_id") %>:</label>
-    <%= text_field_tag('preferences[paybox_id]', SpreePayboxSystemGateway::Config[:paybox_id]) %>
-  </p>
-  <p class="form-buttons">
-    <%= button t('update') %>
-    <%= t("or") %> <%= link_to t("cancel"), admin_paybox_system_gateway_settings_url %>
-  </p>
+  <legend><%= t("spree_paybox_system_gateway.paybox_system_settings") %></legend>
+  <fieldset>
+    <p>
+      <label><%= t("spree_paybox_system_gateway.site_id") %>:</label>
+      <br />
+      <%= text_field_tag('preferences[site_id]', SpreePayboxSystemGateway::Config[:site_id]) %>
+    </p>
+    <p>
+      <label><%= t("spree_paybox_system_gateway.rang") %>:</label>
+      <br />
+      <%= text_field_tag('preferences[rang]', SpreePayboxSystemGateway::Config[:rang]) %>
+    </p>
+    <p>
+      <label><%= t("spree_paybox_system_gateway.paybox_id") %>:</label>
+      <br />
+      <%= text_field_tag('preferences[paybox_id]', SpreePayboxSystemGateway::Config[:paybox_id]) %>
+    </p>
+    <p>
+      <label><%= t("spree_paybox_system_gateway.secret_key") %>:</label>
+      <br />
+      <%= text_field_tag('preferences[secret_key]', SpreePayboxSystemGateway::Config[:secret_key], :size => 130) %>
+    </p>
+    <p>
+      <label><%= t("spree_paybox_system_gateway.currency") %>:</label>
+      <br />
+      <%= text_field_tag('preferences[currency]', SpreePayboxSystemGateway::Config[:currency]) %>
+    </p>
+    <p>
+      <label><%= t("spree_paybox_system_gateway.paybox_url") %>:</label>
+      <br />
+      <%= text_field_tag('preferences[paybox_url]', SpreePayboxSystemGateway::Config[:paybox_url], :size => 64) %>
+    </p>
+    <p class="form-buttons">
+      <%= button t('update') %>
+      <%= t("or") %> <%= link_to t("cancel"), admin_paybox_system_gateway_settings_url %>
+    </p>
+  </fieldset>
 <% end %>

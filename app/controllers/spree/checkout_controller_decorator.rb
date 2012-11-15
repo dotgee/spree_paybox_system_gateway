@@ -1,4 +1,6 @@
+#
 #encoding: utf-8
+#
 module Spree
   CheckoutController.class_eval do
     before_filter :paybox_check_response, :only => [ :paybox_paid, :paybox_refused, :paybox_cancelled ]
@@ -74,7 +76,7 @@ module Spree
 
       logger.debug "PAYBOX_PAID: #{payment_method.inspect} #{@order.payments.inspect} #{@order.inspect} #{params.inspect}"
 
-      flash.notice = t(:order_processed_sucessfully)
+      flash.notice = t(:order_processed_successfully)
       redirect_to completion_route
     end
 

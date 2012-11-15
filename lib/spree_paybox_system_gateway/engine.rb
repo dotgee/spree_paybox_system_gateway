@@ -11,6 +11,10 @@ module SpreePayboxSystemGateway
       SpreePayboxSystemGateway::Config = Spree::PayboxSystemGatewayConfiguration.new
     end
 
+    initializer 'spree.paybox_system_gateway.init_payr', :after => 'spree.paybox_system_gateway.preferences' do |app|
+      SpreePayboxSystemGateway.init_paybox
+    end
+
      initializer "paybox_system_gateway.register.payment_methods", :after => 'spree.register.payment_methods' do |app|
       app.config.spree.payment_methods += [
         Spree::PaymentMethod::PayboxSystem
@@ -29,5 +33,52 @@ module SpreePayboxSystemGateway
     end
 
     config.to_prepare &method(:activate).to_proc
+  end
+
+  #
+  # Initialize paybox Payr module with preferences values
+  # This method take place here because of loading order (preference then payr)
+  #
+  def self.init_paybox
+    Payr.setup do |config|
+	    # Put the  merchant site ID found on the paybox website
+	    #config.site_id = 1999888
+	    config.site_id = Config.site_id
+
+	    # Put the merchant rang found on the paybox website
+	    #config.rang = 32
+	    config.rang = Config.rang
+	
+	    # Put the merchant paybox ID found on the paybox website
+	    #config.paybox_id = 1686319
+	    config.paybox_id = Config.paybox_id
+	    # config.paybox_id = 7293139
+	
+	    # Put the secret key for the hmac pass found on the paybox website
+	    config.secret_key = "0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF"
+
+	    # Put the hash algorithm
+	    # Possible values are :SHA256 :SHA512 :SHA384 :SHA224 
+	    config.hash = :sha512
+	
+	    # The currency 
+	    # possible values :euro :us_dollar
+	    config.currency = :euro 
+	
+	    config.paybox_url = "https://preprod-tpeweb.paybox.com/cgi/MYchoix_pagepaiement.cgi"
+	    # config.paybox_url = "https://preprod-tpeweb.paybox.com/cgi/MYframepagepaiement_ip.cgi"
+	    # config.paybox_url_back_one = nil
+	    # config.paybox_url_back_two = nil
+
+	    config.callback_values = { amount:"m", ref:"r", auto:"a", error:"e", signature:"k" }
+
+	    # Optionnal config : if not null, choose on behalf of the user the type of paiement. 
+	    # EX: "CARTE". Look at the paybox documentation for more
+	    #config.typepaiement = "CARTE"
+	
+	    # Optionnal config : if not null, choose on behalf of the user the type of CARD. 
+	    # EX: "CB". Look at the paybox documentation for more
+	    #config.typecard = "CB"
+    end
   end
 end

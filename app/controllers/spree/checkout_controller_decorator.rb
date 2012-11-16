@@ -81,12 +81,12 @@ module Spree
     end
 
     def paybox_refused
-      flash[:error] = "Opération refusée"
+      flash[:error] = "Op&eacute;ration refus&eacute;e"
       redirect_to "/checkout/payment"
     end
 
     def paybox_cancelled
-      flash[:error] = "Opération annulée"
+      flash[:error] = "Op&eacute;ration annul&eacute;e"
       redirect_to "/checkout/payment"
     end
 

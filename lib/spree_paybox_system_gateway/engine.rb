@@ -55,7 +55,7 @@ module SpreePayboxSystemGateway
 	    # config.paybox_id = 7293139
 	
 	    # Put the secret key for the hmac pass found on the paybox website
-	    config.secret_key = "0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF"
+	    config.secret_key = Config.secret_key
 
 	    # Put the hash algorithm
 	    # Possible values are :SHA256 :SHA512 :SHA384 :SHA224 
@@ -65,10 +65,10 @@ module SpreePayboxSystemGateway
 	    # possible values :euro :us_dollar
 	    config.currency = :euro 
 	
-	    config.paybox_url = "https://preprod-tpeweb.paybox.com/cgi/MYchoix_pagepaiement.cgi"
+	    config.paybox_url = Config.paybox_url
 	    # config.paybox_url = "https://preprod-tpeweb.paybox.com/cgi/MYframepagepaiement_ip.cgi"
-	    # config.paybox_url_back_one = nil
-	    # config.paybox_url_back_two = nil
+	    config.paybox_url_back_one = Config.paybox_url_back_one
+	    config.paybox_url_back_two = Config.paybox_url_back_two
 
 	    config.callback_values = { amount:"m", ref:"r", auto:"a", error:"e", signature:"k" }
 

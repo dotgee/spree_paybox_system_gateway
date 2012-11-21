@@ -1,6 +1,6 @@
 class Spree::PayboxSystemGatewayConfiguration < Spree::Preferences::Configuration
   preference :site_id, :integer, :default => 1999888
-  preference :rang, :integer, :default => 32
+  preference :rang, :string, :default => '32'
   preference :paybox_id, :integer, :default => 110647233
   preference :secret_key, :string, :default => '0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF'
   preference :hash, :string, :default => 'sha512'

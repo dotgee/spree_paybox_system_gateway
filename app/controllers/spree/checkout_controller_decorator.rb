@@ -18,7 +18,7 @@ module Spree
         p_id =  params[:order][:payments_attributes].first[:payment_method_id]
         unless p_id.nil?
           if PaymentMethod.find(p_id).class == Spree::PaymentMethod::PayboxSystem
-            redirect_to :action => :paybox_pay, :params => { :payment_method_id => p_id } and return
+            redirect_to :action => :paybox_pay, :params => { :payment_method_id => p_id, :sra => Time.now.to_f } and return
           end
         end
       end
@@ -27,6 +27,10 @@ module Spree
     alias_method_chain :update, :paybox
 
     def paybox_pay
+      response.headers["Cache-Control"] = "no-cache, no-store, max-age=0, must-revalidate"
+      response.headers["Pragma"] = "no-cache"
+      response.headers["Expires"] = "Fri, 01 Jan 1990 00:00:00 GMT"
+
       unless @order.payments.where(:source_type => 'Spree::PayboxSystemTransaction').present?
         #
         # Record used payment method before payment

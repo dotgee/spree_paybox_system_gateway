@@ -90,18 +90,18 @@ module Spree
     end
 
     def paybox_refused
-      flash[:error] = "Op&eacute;ration refus&eacute;e"
-      redirect_to "/bicf/checkout/payment"
+      flash[:error] = "Op&eacute;ration refus&eacute;e".html_safe
+      redirect_to "/checkout/payment"
     end
 
     def paybox_cancelled
-      flash[:error] = "Op&eacute;ration annul&eacute;e"
-      redirect_to "/bicf/checkout/payment"
+      flash[:error] = "Op&eacute;ration annul&eacute;e".html_safe
+      redirect_to "/checkout/payment"
     end
 
     def paybox_ipn
       amount = params[:amount]
-      # @order = Spree::Order.find(params[:ref])
+      @order = Spree::Order.find(params[:ref])
       logger.debug "PAYBOX_IPN: #{params.inspect} #{@order.inspect}"
       render :nothing => true
       # raise "PAYBOX_IPN: #{params.inspect}"
@@ -140,7 +140,8 @@ module Spree
                                                         paid: paybox_paid_checkout_url,
                                                         refused: paybox_refused_checkout_url,
                                                         cancelled: paybox_cancelled_checkout_url,
-                                                        ipn: paybox_ipn_checkout_url
+                                                        # ipn: paybox_ipn_checkout_url
+                                                        ipn: paybox_ipn_url
                                                       }
     
       

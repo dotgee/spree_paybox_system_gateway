@@ -31,7 +31,7 @@ class Spree::PayboxCallbacksController < Payr::BillsController
       until @order.state == 'complete'
         if @order.next!
           @order.update!
-          Spree::CheckoutController.state_callback(:after)
+          #Spree::CheckoutController.state_callback(:after)
         end
       end
 

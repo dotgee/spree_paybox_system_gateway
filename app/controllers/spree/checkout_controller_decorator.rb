@@ -8,6 +8,11 @@ module Spree
 
     before_filter :load_paybox_params, :only => [ :paybox_pay ]
     before_filter :validate_paybox, :except => [ :edit ]
+    skip_before_filter :load_order, :only => [ :paybox_ipn ]
+    skip_before_filter :ensure_valid_state, :only => [ :paybox_ipn ]
+    skip_before_filter :associate_user, :only => [ :paybox_ipn ]
+    skip_before_filter :check_authorization, :only => [ :paybox_ipn ]
+    before_filter :check_registration, :except => [:registration, :update_registration, :paybox_ipn]
 
     #
     # Very bad hack to handle paybox external payment from
@@ -85,17 +90,21 @@ module Spree
     end
 
     def paybox_refused
-      flash[:error] = "Op&eacute;ration refus&eacute;e"
+      flash[:error] = "Op&eacute;ration refus&eacute;e".html_safe
       redirect_to "/checkout/payment"
     end
 
     def paybox_cancelled
-      flash[:error] = "Op&eacute;ration annul&eacute;e"
+      flash[:error] = "Op&eacute;ration annul&eacute;e".html_safe
       redirect_to "/checkout/payment"
     end
 
     def paybox_ipn
-      raise "PAYBOX_IPN: #{params.inspect}"
+      amount = params[:amount]
+      @order = Spree::Order.find(params[:ref])
+      logger.debug "PAYBOX_IPN: #{params.inspect} #{@order.inspect}"
+      render :nothing => true
+      # raise "PAYBOX_IPN: #{params.inspect}"
     end
 
     private
@@ -131,7 +140,8 @@ module Spree
                                                         paid: paybox_paid_checkout_url,
                                                         refused: paybox_refused_checkout_url,
                                                         cancelled: paybox_cancelled_checkout_url,
-                                                        ipn: paybox_ipn_checkout_url
+                                                        # ipn: paybox_ipn_checkout_url
+                                                        ipn: paybox_ipn_url
                                                       }
     
       

@@ -11,10 +11,12 @@ Spree::Core::Engine.routes.draw do
         get :paybox_paid
         get :paybox_refused
         get :paybox_cancelled
-        get :paybox_ipn
+        # get :paybox_ipn
       end
     end
   # end
+
+  match '/paybox/ipn' => "paybox_callbacks#ipn", :via => :get, :as => :paybox_ipn
 
   namespace :admin do
     resource :paybox_system_gateway_settings

@@ -86,7 +86,7 @@ module Spree
       logger.debug "PAYBOX_PAID: #{payment_method.inspect} #{@order.payments.inspect} #{@order.inspect} #{params.inspect}"
 
       flash.notice = t(:order_processed_successfully)
-      redirect_to completion_route
+      redirect_to order_path(@order)
     end
 
     def paybox_refused

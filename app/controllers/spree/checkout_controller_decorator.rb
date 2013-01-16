@@ -3,16 +3,12 @@
 #
 module Spree
   CheckoutController.class_eval do
-    before_filter :paybox_check_response, :only => [ :paybox_paid ]
-    before_filter :paybox_check_ipn_response, :only => [ :paybox_ipn ]
+    prepend_before_filter :paybox_check_response, :only => [ :paybox_paid ]
 
     before_filter :load_paybox_params, :only => [ :paybox_pay ]
     before_filter :validate_paybox, :except => [ :edit ]
-    skip_before_filter :load_order, :only => [ :paybox_ipn ]
-    skip_before_filter :ensure_valid_state, :only => [ :paybox_ipn ]
-    skip_before_filter :associate_user, :only => [ :paybox_ipn ]
-    skip_before_filter :check_authorization, :only => [ :paybox_ipn ]
-    before_filter :check_registration, :except => [:registration, :update_registration, :paybox_ipn]
+    skip_before_filter :load_order, :only => [ :paybox_paid]
+    before_filter :check_registration, :except => [:registration, :update_registration]
 
     #
     # Very bad hack to handle paybox external payment from
@@ -86,6 +82,7 @@ module Spree
       logger.debug "PAYBOX_PAID: #{payment_method.inspect} #{@order.payments.inspect} #{@order.inspect} #{params.inspect}"
 
       flash.notice = t(:order_processed_successfully)
+      @order.reload
       redirect_to order_path(@order)
     end
 
@@ -99,14 +96,6 @@ module Spree
       redirect_to "/checkout/payment"
     end
 
-    def paybox_ipn
-      amount = params[:amount]
-      @order = Spree::Order.find(params[:ref])
-      logger.debug "PAYBOX_IPN: #{params.inspect} #{@order.inspect}"
-      render :nothing => true
-      # raise "PAYBOX_IPN: #{params.inspect}"
-    end
-
     private
       def paybox_check_response
         unless Payr::Client.new.check_response(request.url)
@@ -114,6 +103,8 @@ module Spree
           # redirect to failure
           return
         end
+        @order = Spree::Order.find_by_id(session[:order_id])
+        return redirect_to cart_path if @order.nil?
       end
 
       def paybox_check_ipn_response

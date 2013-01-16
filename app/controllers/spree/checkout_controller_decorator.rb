@@ -3,7 +3,7 @@
 #
 module Spree
   CheckoutController.class_eval do
-    before_filter :paybox_check_response, :only => [ :paybox_paid, :paybox_refused, :paybox_cancelled ]
+    before_filter :paybox_check_response, :only => [ :paybox_paid ]
     before_filter :paybox_check_ipn_response, :only => [ :paybox_ipn ]
 
     before_filter :load_paybox_params, :only => [ :paybox_pay ]

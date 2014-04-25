@@ -1,4 +1,5 @@
 class Spree::PayboxCallbacksController < Payr::BillsController
+  before_filter :authenticate_user!, except: [:ipn]
   skip_before_filter :check_ipn_response
   NO_ERROR = "00000"
 
@@ -11,7 +12,7 @@ class Spree::PayboxCallbacksController < Payr::BillsController
         paybox_transaction = Spree::PayboxSystemTransaction.create_from_postback params.merge(:action => 'paid')
         payment = @order.payments.where(:state => 'checkout',
                                         :payment_method_id => payment_method.id).first
-        
+
         if payment
           payment.source = paybox_transaction
           payment.save
@@ -28,17 +29,19 @@ class Spree::PayboxCallbacksController < Payr::BillsController
         end
       end
 
-      until @order.state == 'complete'
-        if @order.next!
-          @order.update!
-        end
-      end
+      # until @order.state == 'complete'
+      #   if @order.next!
+      #     @order.update!
+      #   end
+      # end
+
+      @order.finalize!
 
       logger.debug "PAYBOX_PAID: #{payment_method.inspect} #{@order.payments.inspect} #{@order.inspect} #{params.inspect}"
       render nothing: true, :status => 200, :content_type => 'text/html'
     else
       logger.debug "Erreur: #{params[:error]}"
     end
-    #raise params.inspect
+
   end
 end

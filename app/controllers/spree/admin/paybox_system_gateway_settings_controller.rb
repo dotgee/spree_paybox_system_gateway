@@ -1,6 +1,6 @@
 class Spree::Admin::PayboxSystemGatewaySettingsController < Spree::Admin::BaseController
   def edit
-    
+
   end
 
   def update
@@ -14,7 +14,7 @@ class Spree::Admin::PayboxSystemGatewaySettingsController < Spree::Admin::BaseCo
       config.paybox_id = SpreePayboxSystemGateway::Config.paybox_id
       config.secret_key = SpreePayboxSystemGateway::Config.secret_key
       config.paybox_url = SpreePayboxSystemGateway::Config.paybox_url
-      # config.paybox_url_back_one = SpreePayboxSystemGateway::Config.paybox_url_back_one unless SpreePayboxSystemGateway::Config.paybox_url_back_one.blank?
+      config.paybox_url_back_one = SpreePayboxSystemGateway::Config.paybox_url_back_one unless SpreePayboxSystemGateway::Config.paybox_url_back_one.blank?
       # config.paybox_url_back_two = SpreePayboxSystemGateway::Config.paybox_url_back_two unless SpreePayboxSystemGateway::Config.paybox_url_back_two.blank?
     end
 

@@ -1,20 +1,26 @@
-Spree::Core::Engine.routes.draw do
+Spree::Core::Engine.add_routes do
   # Add your extension routes here
 
   # payr_routes callback_controller: "spree/paybox_system/callbacks"
 
-  # resources :orders do
-    resource :checkout, :controller => 'checkout' do
-      # member do
-      collection do
-        get :paybox_pay
-        get :paybox_paid
-        get :paybox_refused
-        get :paybox_cancelled
-        # get :paybox_ipn
-      end
-    end
-  # end
+  # # resources :orders do
+  #   resource :checkout, :controller => 'checkout' do
+  #     # member do
+  #     collection do
+  #       get :paybox_pay
+  #       get :paybox_paid
+  #       get :paybox_refused
+  #       get :paybox_cancelled
+  #       # get :paybox_ipn
+  #     end
+  #   end
+  # # end
+
+
+  get '/checkout/paybox_pay', :to => 'checkout#paybox_pay', :as => :paybox_pay
+  get '/checkout/paybox_paid', :to => 'checkout#paybox_paid', :as => :paybox_paid
+  get '/checkout/paybox_refused', :to => 'checkout#paybox_refused', :as => :paybox_refused
+  get '/checkout/paybox_cancelled', :to => 'checkout#paybox_cancelled', :as => :paybox_cancelled
 
   match '/paybox/ipn' => "paybox_callbacks#ipn", :via => :get, :as => :paybox_ipn
 

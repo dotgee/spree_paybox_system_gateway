@@ -50,7 +50,7 @@ module Spree
       # order_id, payment_method_id = params[:ref].split('|')
 
       unless @order.payments.where(:source_type => 'Spree::PayboxSystemTransaction').present?
-        payment_method = @order.payment_method # PaymentMethod.find(payment_method_id)
+        payment_method = @order.payments.first.payment_method # PaymentMethod.find(payment_method_id)
         paybox_transaction = Spree::PayboxSystemTransaction.create_from_postback params.merge(:action => 'paid') # new(:action => 'paid', :amount => params[:amount], :auto => params[:auto], :error => params[:error], :ref => order_id)
 
         payment = @order.payments.where(:state => 'checkout',
@@ -72,12 +72,15 @@ module Spree
         end
       end
 
-      until @order.state == 'complete'
-        if @order.next!
-          @order.update!
-          state_callback(:after)
-        end
-      end
+      # until @order.state == 'complete'
+      #   if @order.next!
+      #     @order.update!
+      #     state_callback(:after)
+      #   end
+      # end
+
+      # a faire dans le ipn controller
+      # @order.finalize!
 
       logger.debug "PAYBOX_PAID: #{payment_method.inspect} #{@order.payments.inspect} #{@order.inspect} #{params.inspect}"
 
@@ -121,21 +124,21 @@ module Spree
         @payr = Payr::Client.new
 
         @paybox_params = @payr.get_paybox_params_from command_id: @order.id,
-                                                      buyer_email: current_user.email,
+                                                      buyer_email: spree_current_user.email,
                                                       total_price: ( @order.total * 100 ).to_i,
                                                       callbacks: {
                                                         # paid: "http://paybox.devel.dotgee.fr:3000/checkout/paybox_paid",
                                                         # refused: "http://paybox.devel.dotgee.fr:3000/checkout/paybox_paid",
                                                         # cancelled: "http://paybox.devel.dotgee.fr:3000/checkout/paybox_paid",
                                                         # ipn: "http://paybox.devel.dotgee.fr:3000/checkout/paybox_paid"
-                                                        paid: paybox_paid_checkout_url,
-                                                        refused: paybox_refused_checkout_url,
-                                                        cancelled: paybox_cancelled_checkout_url,
-                                                        # ipn: paybox_ipn_checkout_url
-                                                        ipn: paybox_ipn_url
+                                                        paid: "http://localhost:3000#{paybox_paid_path}",
+                                                        refused: "http://localhost:3000#{paybox_refused_path}",
+                                                        cancelled: "http://localhost:3000#{paybox_cancelled_path}",
+                                                        # ipn: "http://localhost:3000#{paybox_ipn_path}"
+                                                        ipn: "http://localhost:3000/paybox/ipn"
                                                       }
-    
-      
+
+
       end
 
 

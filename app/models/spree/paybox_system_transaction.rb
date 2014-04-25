@@ -1,14 +1,14 @@
 module Spree
   class PayboxSystemTransaction < ActiveRecord::Base
-    attr_accessible :action, :amount, :auto, :error, :ref
-      
+    # attr_accessible :action, :amount, :auto, :error, :ref
+
     has_many :payments, :as => :source
 
     def actions
       # %w{capture void credit}
       %w{capture}
     end
-      
+
 
     def can_capture?(payment)
       false # payment.state == 'pending'

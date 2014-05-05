@@ -90,12 +90,12 @@ module Spree
     end
 
     def paybox_refused
-      flash[:error] = "Op&eacute;ration refus&eacute;e".html_safe
+      flash[:error] = "OP&Eacute;RATION REFUS&Eacute;E".html_safe
       redirect_to "/checkout/payment"
     end
 
     def paybox_cancelled
-      flash[:error] = "Op&eacute;ration annul&eacute;e".html_safe
+      flash[:error] = "OP&Eacute;RATION ANNUL&Eacute;E".html_safe
       redirect_to "/checkout/payment"
     end
 
@@ -131,11 +131,11 @@ module Spree
                                                         # refused: "http://paybox.devel.dotgee.fr:3000/checkout/paybox_paid",
                                                         # cancelled: "http://paybox.devel.dotgee.fr:3000/checkout/paybox_paid",
                                                         # ipn: "http://paybox.devel.dotgee.fr:3000/checkout/paybox_paid"
-                                                        paid: "http://localhost:3000#{paybox_paid_path}",
-                                                        refused: "http://localhost:3000#{paybox_refused_path}",
-                                                        cancelled: "http://localhost:3000#{paybox_cancelled_path}",
+                                                        paid: "#{Spree::Config.site_url}#{paybox_paid_path}",
+                                                        refused: "#{Spree::Config.site_url}#{paybox_refused_path}",
+                                                        cancelled: "#{Spree::Config.site_url}#{paybox_cancelled_path}",
                                                         # ipn: "http://localhost:3000#{paybox_ipn_path}"
-                                                        ipn: "http://localhost:3000/paybox/ipn"
+                                                        ipn: "#{Spree::Config.site_url}paybox/ipn"
                                                       }
 
 

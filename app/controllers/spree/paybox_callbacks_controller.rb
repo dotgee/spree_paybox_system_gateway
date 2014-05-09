@@ -8,7 +8,7 @@ class Spree::PayboxCallbacksController < Payr::BillsController
     @order = Spree::Order.find(params[:ref])
     if params[:error] == NO_ERROR #&& Payr::Client.new.check_response_ipn(request.url)
       unless @order.payments.where(:source_type => 'Spree::PayboxSystemTransaction').present?
-        payment_method = @order.payment_method
+        payment_method = Spree::PaymentMethod.where(type: "Spree::PaymentMethod::PayboxSystem").first
         paybox_transaction = Spree::PayboxSystemTransaction.create_from_postback params.merge(:action => 'paid')
         payment = @order.payments.where(:state => 'checkout',
                                         :payment_method_id => payment_method.id).first

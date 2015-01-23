@@ -1,7 +1,7 @@
 module Spree
   class PaymentMethod::PayboxSystem < PaymentMethod
     def actions
-      %{capture void}
+      %w{capture void}
     end
 
     # Indicates whether its possible to capture the payment

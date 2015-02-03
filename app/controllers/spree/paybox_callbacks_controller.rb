@@ -28,7 +28,7 @@ class Spree::PayboxCallbacksController < Payr::BillsController
       end
 
       @order.finalize!
-      logger.debug "PAYBOX_PAID: #{payment_method.inspect} #{@order.payments.inspect} #{@order.inspect} #{params.inspect}"
+      logger.debug "PAYBOX_PAID: #{@payment_method.inspect} #{@order.payments.inspect} #{@order.inspect} #{params.inspect}"
     else
       set_payment
       @payment.update_attributes(state: "invalid", response_code: params[:error]) if payment
@@ -40,6 +40,6 @@ class Spree::PayboxCallbacksController < Payr::BillsController
   def set_payment
     @payment_method = Spree::PaymentMethod.where(type: "Spree::PaymentMethod::PayboxSystem").first
     @payment = @order.payments.where(:state => 'checkout',
-                                        :payment_method_id => payment_method.id).first
+                                        :payment_method_id => @payment_method.id).first
   end
 end

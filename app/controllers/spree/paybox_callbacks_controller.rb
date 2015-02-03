@@ -24,24 +24,18 @@ class Spree::PayboxCallbacksController < Payr::BillsController
 
         payment.started_processing!
         unless payment.completed?
+          payment.update_attributes(state: "checkout", response_code: "")
           # see: app/controllers/spree/skrill_status_controller.rb line 22
           payment.complete!
         end
       end
 
-      # until @order.state == 'complete'
-      #   if @order.next!
-      #     @order.update!
-      #   end
-      # end
-
       @order.finalize!
-
       logger.debug "PAYBOX_PAID: #{payment_method.inspect} #{@order.payments.inspect} #{@order.inspect} #{params.inspect}"
-      render nothing: true, :status => 200, :content_type => 'text/html'
     else
+      payment.update_attributes(state: "invalid", response_code: params[:error])
       logger.debug "Erreur: #{params[:error]}"
     end
-
+    render nothing: true, :status => 200, :content_type => 'text/html'
   end
 end

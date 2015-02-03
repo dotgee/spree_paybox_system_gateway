@@ -31,7 +31,7 @@ class Spree::PayboxCallbacksController < Payr::BillsController
       logger.debug "PAYBOX_PAID: #{@payment_method.inspect} #{@order.payments.inspect} #{@order.inspect} #{params.inspect}"
     else
       set_payment
-      @payment.update_attributes(state: "invalid", response_code: params[:error]) if payment
+      @payment.update_attributes(state: "invalid", response_code: params[:error]) if @payment
       logger.debug "Erreur: #{params[:error]}"
     end
     render nothing: true, :status => 200, :content_type => 'text/html'
